@@ -299,19 +299,53 @@ public final class AudioEngine: ObservableObject {
     }
     
     private func applyAppVolumeControl(bundleIdentifier: String, volume: Float) {
-        if bundleIdentifier == "com.apple.Music" {
-            let intVol = Int(volume * 100)
-            let script = "tell application \"Music\" to set sound volume to \(intVol)"
-            if let appleScript = NSAppleScript(source: script) {
-                var error: NSDictionary?
-                appleScript.executeAndReturnError(&error)
+        let intVol = Int(max(0.0, min(1.0, volume)) * 100)
+        
+        switch bundleIdentifier {
+        case "com.apple.Music":
+            executeScript("tell application \"Music\" to set sound volume to \(intVol)")
+            
+        case "com.spotify.client":
+            executeScript("tell application \"Spotify\" to set sound volume to \(intVol)")
+            
+        case "com.apple.QuickTimePlayerX":
+            executeScript("tell application \"QuickTime Player\" to set audio volume of every document to \(Double(volume))")
+            
+        case "com.apple.TV":
+            executeScript("tell application \"TV\" to set sound volume to \(intVol)")
+            
+        case "com.apple.Podcasts":
+            executeScript("tell application \"Podcasts\" to set sound volume to \(intVol)")
+            
+        case "org.videolan.vlc":
+            executeScript("tell application \"VLC\" to set volume to \(intVol * 2)")
+            
+        case "com.google.Chrome", "company.thebrowser.Browser", "com.brave.Browser":
+            if volume <= 0.01 {
+                executeScript("tell application id \"\(bundleIdentifier)\" to execute front window's active tab javascript \"document.querySelectorAll('video, audio').forEach(el => el.muted = true);\"")
+            } else {
+                let jsVol = String(format: "%.2f", volume)
+                executeScript("tell application id \"\(bundleIdentifier)\" to execute front window's active tab javascript \"document.querySelectorAll('video, audio').forEach(el => { el.muted = false; el.volume = \(jsVol); });\"")
             }
-        } else if bundleIdentifier == "com.spotify.client" {
-            let intVol = Int(volume * 100)
-            let script = "tell application \"Spotify\" to set sound volume to \(intVol)"
-            if let appleScript = NSAppleScript(source: script) {
-                var error: NSDictionary?
-                appleScript.executeAndReturnError(&error)
+            
+        case "com.apple.Safari":
+            if volume <= 0.01 {
+                executeScript("tell application \"Safari\" to do JavaScript \"document.querySelectorAll('video, audio').forEach(el => el.muted = true);\" in current tab of front window")
+            } else {
+                let jsVol = String(format: "%.2f", volume)
+                executeScript("tell application \"Safari\" to do JavaScript \"document.querySelectorAll('video, audio').forEach(el => { el.muted = false; el.volume = \(jsVol); });\" in current tab of front window")
+            }
+            
+        default:
+            break
+        }
+    }
+    
+    private func executeScript(_ source: String) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            var error: NSDictionary?
+            if let script = NSAppleScript(source: source) {
+                script.executeAndReturnError(&error)
             }
         }
     }

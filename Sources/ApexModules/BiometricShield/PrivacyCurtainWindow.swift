@@ -15,12 +15,12 @@ public final class PrivacyCurtainController: ObservableObject {
     
     private init() {}
     
-    public func lock(appName: String) {
+    public func lock(appName: String, photo: NSImage? = nil) {
         guard !isLocked else { return }
         self.currentProtectedAppName = appName
         self.isLocked = true
         
-        TelegramAlertEngine.shared.sendIntruderAlert(appName: appName)
+        TelegramAlertEngine.shared.sendIntruderAlert(appName: appName, photo: photo)
         
         guard let screen = NSScreen.main else { return }
         

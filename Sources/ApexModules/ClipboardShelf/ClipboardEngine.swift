@@ -60,6 +60,15 @@ public struct ClipboardItem: Identifiable, Hashable, @unchecked Sendable {
     }
 }
 
+private struct StoredClipboardItem: Codable {
+    let id: String
+    let type: String
+    let textContent: String?
+    let fileURLs: [String]?
+    let timestamp: Date
+    let isPinned: Bool
+}
+
 @MainActor
 public final class ClipboardEngine: ObservableObject {
     public static let shared = ClipboardEngine()
@@ -69,9 +78,15 @@ public final class ClipboardEngine: ObservableObject {
     private var lastChangeCount: Int = 0
     private var timer: Timer?
     private let maxItemsCount = 50
+    private let storageURL: URL
     
     private init() {
         self.lastChangeCount = NSPasteboard.general.changeCount
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        let dir = home.appendingPathComponent(".apex")
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        self.storageURL = dir.appendingPathComponent("clipboard_history.json")
+        loadStoredItems()
     }
     
     public func start() {
@@ -91,15 +106,18 @@ public final class ClipboardEngine: ObservableObject {
     
     public func clearAll() {
         items.removeAll(where: { !$0.isPinned })
+        saveToDisk()
     }
     
     public func removeItem(_ item: ClipboardItem) {
         items.removeAll(where: { $0.id == item.id })
+        saveToDisk()
     }
     
     public func togglePin(_ item: ClipboardItem) {
         if let idx = items.firstIndex(where: { $0.id == item.id }) {
             items[idx].isPinned.toggle()
+            saveToDisk()
         }
     }
     
@@ -125,6 +143,23 @@ public final class ClipboardEngine: ObservableObject {
         }
         
         self.lastChangeCount = pb.changeCount
+    }
+
+    public func pasteDirectly(_ item: ClipboardItem) {
+        copyToPasteboard(item)
+        ApexHUDWindowController.shared.hide()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+            let src = CGEventSource(stateID: .hidSystemState)
+            // Virtual key 9 is 'v'
+            if let keyDown = CGEvent(keyboardEventSource: src, virtualKey: 9, keyDown: true),
+               let keyUp = CGEvent(keyboardEventSource: src, virtualKey: 9, keyDown: false) {
+                keyDown.flags = .maskCommand
+                keyUp.flags = .maskCommand
+                keyDown.post(tap: .cghidEventTap)
+                keyUp.post(tap: .cghidEventTap)
+            }
+        }
     }
     
     private func checkPasteboard() {
@@ -172,6 +207,49 @@ public final class ClipboardEngine: ObservableObject {
             if let unpinnedIndex = self.items.lastIndex(where: { !$0.isPinned }) {
                 self.items.remove(at: unpinnedIndex)
             }
+        }
+        saveToDisk()
+    }
+    
+    private func saveToDisk() {
+        let serializable = items.prefix(30).compactMap { item -> StoredClipboardItem? in
+            let typeStr = item.type.rawValue
+            let urlsStr = item.fileURLs?.map { $0.path }
+            return StoredClipboardItem(
+                id: item.id.uuidString,
+                type: typeStr,
+                textContent: item.textContent,
+                fileURLs: urlsStr,
+                timestamp: item.timestamp,
+                isPinned: item.isPinned
+            )
+        }
+        
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        if let data = try? encoder.encode(serializable) {
+            try? data.write(to: storageURL)
+        }
+    }
+    
+    private func loadStoredItems() {
+        guard let data = try? Data(contentsOf: storageURL),
+              let list = try? JSONDecoder().decode([StoredClipboardItem].self, from: data) else {
+            return
+        }
+        
+        self.items = list.compactMap { s in
+            let type = ClipboardItemType(rawValue: s.type) ?? .text
+            let urls = s.fileURLs?.map { URL(fileURLWithPath: $0) }
+            return ClipboardItem(
+                id: UUID(uuidString: s.id) ?? UUID(),
+                type: type,
+                textContent: s.textContent,
+                image: nil,
+                fileURLs: urls,
+                timestamp: s.timestamp,
+                isPinned: s.isPinned
+            )
         }
     }
 }

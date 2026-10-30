@@ -30,7 +30,7 @@ public final class BiometricShieldModule: ApexModule {
     public func start() {
         guard isEnabled else { return }
         
-        FaceDetectionEngine.shared.startCapture()
+        BiometricFaceEngine.shared.startCapture()
         
         workspaceObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,
@@ -51,7 +51,7 @@ public final class BiometricShieldModule: ApexModule {
             NSWorkspace.shared.notificationCenter.removeObserver(obs)
             self.workspaceObserver = nil
         }
-        FaceDetectionEngine.shared.stopCapture()
+        BiometricFaceEngine.shared.stopCapture()
         PrivacyCurtainController.shared.dismiss()
         unlockedSessions.removeAll()
     }
@@ -67,13 +67,16 @@ public final class BiometricShieldModule: ApexModule {
             return
         }
         
-        if !FaceDetectionEngine.shared.isFacePresent {
-            PrivacyCurtainController.shared.lock(appName: appName ?? "Protected App")
-            PrivacyCurtainController.shared.onUnlocked = { [weak self] in
-                self?.unlockedSessions.insert(bid)
+        BiometricFaceEngine.shared.verifyOwner(timeout: 1.5) { [weak self] success, dist, photo in
+            guard let self = self else { return }
+            if success {
+                self.unlockedSessions.insert(bid)
+            } else {
+                PrivacyCurtainController.shared.lock(appName: appName ?? "Protected App", photo: photo)
+                PrivacyCurtainController.shared.onUnlocked = { [weak self] in
+                    self?.unlockedSessions.insert(bid)
+                }
             }
-        } else {
-            unlockedSessions.insert(bid)
         }
     }
 }

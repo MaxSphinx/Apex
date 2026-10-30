@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct BiometricShieldHUDView: View {
     @ObservedObject private var prefs = ApexPreferences.shared
-    @ObservedObject private var faceEngine = FaceDetectionEngine.shared
+    @ObservedObject private var faceEngine = BiometricFaceEngine.shared
     @State private var newAppBundleId = ""
     @State private var testAlertStatus = ""
     
@@ -32,17 +32,28 @@ public struct BiometricShieldHUDView: View {
                     }
                     
                     // Live Status Pill
-                    HStack(spacing: 8) {
-                        Circle()
-                            .fill(faceEngine.isFacePresent ? Color.apexEmerald : Color.apexCoral)
-                            .frame(width: 8, height: 8)
-                        Text(faceEngine.isFacePresent ? "User Face Verified via Neural Engine" : "No Registered Face in Camera View")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundColor(.white)
-                        Spacer()
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(faceEngine.isFacePresent ? Color.apexEmerald : Color.apexCoral)
+                                .frame(width: 8, height: 8)
+                            Text(faceEngine.isFacePresent ? "User Face Verified via Apple Neural Engine" : "Camera Ready (Awaiting Protected App)")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(.white)
+                            Spacer()
+                        }
+                        
+                        HStack(spacing: 6) {
+                            Image(systemName: "cpu")
+                                .font(.system(size: 10))
+                                .foregroundColor(.apexCyan)
+                            Text("Enrolled 128-D Templates: \(faceEngine.enrolledVectorsCount) vectors (\(faceEngine.enrolledVectorsCount > 0 ? "Strict ANFRv4 Match" : "Presence Detection"))")
+                                .font(.system(size: 10, design: .monospaced))
+                                .foregroundColor(.gray)
+                        }
                     }
                     .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
+                    .padding(.vertical, 8)
                     .background(Color.white.opacity(0.04))
                     .cornerRadius(8)
                 }

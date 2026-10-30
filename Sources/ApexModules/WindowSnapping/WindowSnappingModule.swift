@@ -28,10 +28,15 @@ public final class WindowSnappingModule: ApexModule {
         HotkeyManager.shared.onSnapRequested = { [weak self] action in
             self?.handleSnap(action)
         }
+        MouseEdgeSnappingDetector.shared.start()
+        MouseEdgeSnappingDetector.shared.onSnapCommitted = { [weak self] action in
+            self?.handleSnap(action)
+        }
     }
     
     public func stop() {
         HotkeyManager.shared.onSnapRequested = nil
+        MouseEdgeSnappingDetector.shared.stop()
         SnapPreviewWindow.shared.hide()
     }
     

@@ -92,16 +92,22 @@ public struct ClipboardHUDView: View {
                                     .frame(width: 20)
                                 
                                 // Content Preview
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(item.previewTitle)
-                                        .font(.system(size: 12))
-                                        .foregroundColor(.white)
-                                        .lineLimit(2)
-                                    
-                                    Text(item.timestamp, style: .time)
-                                        .font(.system(size: 9))
-                                        .foregroundColor(.gray)
+                                Button(action: {
+                                    clipboard.pasteDirectly(item)
+                                }) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(item.previewTitle)
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.white)
+                                            .lineLimit(2)
+                                            .multilineTextAlignment(.leading)
+                                        
+                                        Text(item.timestamp, style: .time)
+                                            .font(.system(size: 9))
+                                            .foregroundColor(.gray)
+                                    }
                                 }
+                                .buttonStyle(.plain)
                                 
                                 Spacer()
                                 

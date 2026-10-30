@@ -9,7 +9,10 @@ public final class ApexPreferences: ObservableObject {
     private let prefix = "apex.preference."
     
     @Published public var launchAtLogin: Bool {
-        didSet { defaults.set(launchAtLogin, forKey: prefix + "launchAtLogin") }
+        didSet {
+            defaults.set(launchAtLogin, forKey: prefix + "launchAtLogin")
+            updateLaunchAtLogin(launchAtLogin)
+        }
     }
     
     @Published public var notchBarEnabled: Bool {
@@ -66,5 +69,39 @@ public final class ApexPreferences: ObservableObject {
     public func setModuleEnabled(named id: String, enabled: Bool) {
         let key = prefix + "module." + id + ".enabled"
         defaults.set(enabled, forKey: key)
+    }
+
+    private func updateLaunchAtLogin(_ enabled: Bool) {
+        let fm = FileManager.default
+        let home = fm.homeDirectoryForCurrentUser
+        let plistURL = home.appendingPathComponent("Library/LaunchAgents/io.github.maxsphinx.apex.plist")
+        
+        if enabled {
+            let appPath = Bundle.main.bundlePath
+            let plistContent = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+                <key>Label</key>
+                <string>io.github.maxsphinx.apex</string>
+                <key>ProgramArguments</key>
+                <array>
+                    <string>/usr/bin/open</string>
+                    <string>-a</string>
+                    <string>\(appPath)</string>
+                </array>
+                <key>RunAtLoad</key>
+                <true/>
+                <key>ProcessType</key>
+                <string>Interactive</string>
+            </dict>
+            </plist>
+            """
+            try? fm.createDirectory(at: plistURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? plistContent.write(to: plistURL, atomically: true, encoding: .utf8)
+        } else {
+            try? fm.removeItem(at: plistURL)
+        }
     }
 }
