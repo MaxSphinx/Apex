@@ -61,6 +61,9 @@ public final class ApexPreferences: ObservableObject {
     public func isModuleEnabled(named id: String) -> Bool {
         let key = prefix + "module." + id + ".enabled"
         if defaults.object(forKey: key) == nil {
+            if id == "biometric_shield" {
+                return false
+            }
             return true
         }
         return defaults.bool(forKey: key)
