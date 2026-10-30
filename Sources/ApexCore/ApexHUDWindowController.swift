@@ -23,7 +23,7 @@ public final class ApexHUDWindowController: ObservableObject {
     public func show(relativeTo statusItemButton: NSStatusBarButton? = nil) {
         if panel == nil {
             let p = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 480, height: 560),
+                contentRect: NSRect(x: 0, y: 0, width: 470, height: 610),
                 styleMask: [.borderless, .nonactivatingPanel],
                 backing: .buffered,
                 defer: false
@@ -32,6 +32,7 @@ public final class ApexHUDWindowController: ObservableObject {
             p.backgroundColor = .clear
             p.level = .floating
             p.hasShadow = true
+            p.appearance = NSAppearance(named: .darkAqua)
             p.isMovableByWindowBackground = false
             p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
             
@@ -43,7 +44,7 @@ public final class ApexHUDWindowController: ObservableObject {
         guard let p = panel, let screen = NSScreen.main else { return }
         
         var origin = CGPoint.zero
-        let panelSize = CGSize(width: 480, height: 560)
+        let panelSize = CGSize(width: 470, height: 610)
         
         if let btn = statusItemButton, let window = btn.window {
             let buttonRectOnScreen = window.convertToScreen(btn.bounds)
