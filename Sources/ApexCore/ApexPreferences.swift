@@ -45,7 +45,7 @@ public final class ApexPreferences: ObservableObject {
     
     private init() {
         self.launchAtLogin = defaults.bool(forKey: prefix + "launchAtLogin")
-        self.notchBarEnabled = defaults.object(forKey: prefix + "notchBarEnabled") as? Bool ?? true
+        self.notchBarEnabled = defaults.bool(forKey: prefix + "notchBarEnabled")
         self.fileShelfFloating = defaults.bool(forKey: prefix + "fileShelfFloating")
         self.faceLockEnabled = defaults.bool(forKey: prefix + "faceLockEnabled")
         self.telegramAlertsEnabled = defaults.bool(forKey: prefix + "telegramAlertsEnabled")

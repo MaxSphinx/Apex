@@ -179,17 +179,23 @@ public struct OverviewView: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(.gray)
                     
-                    HStack(spacing: 8) {
-                        ModuleJumpButton(title: "Audio Mixer", icon: "speaker.wave.3.fill", color: .apexCyan) {
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                        ModuleJumpButton(title: "Tools & OCR", icon: "wrench.and.screwdriver.fill", color: .apexCyan) {
+                            onSelectTab(.tools)
+                        }
+                        ModuleJumpButton(title: "Mouse & Keys", icon: "computermouse.fill", color: .apexEmerald) {
+                            onSelectTab(.peripherals)
+                        }
+                        ModuleJumpButton(title: "Audio Mixer", icon: "speaker.wave.3.fill", color: .apexPurple) {
                             onSelectTab(.mixer)
                         }
                         ModuleJumpButton(title: "App Cleaner", icon: "trash.fill", color: .apexCoral) {
                             onSelectTab(.cleaner)
                         }
-                        ModuleJumpButton(title: "FaceLock", icon: "faceid", color: .apexPurple) {
+                        ModuleJumpButton(title: "FaceLock", icon: "faceid", color: .apexCyan) {
                             onSelectTab(.shield)
                         }
-                        ModuleJumpButton(title: "Clipboard", icon: "doc.on.clipboard.fill", color: .apexEmerald) {
+                        ModuleJumpButton(title: "Clipboard", icon: "doc.on.clipboard.fill", color: .yellow) {
                             onSelectTab(.clipboard)
                         }
                     }

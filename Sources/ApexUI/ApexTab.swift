@@ -2,6 +2,8 @@ import SwiftUI
 
 public enum ApexTab: String, CaseIterable, Identifiable {
     case overview = "Overview"
+    case tools = "Tools & OCR"
+    case peripherals = "Input"
     case snapping = "Snap Grid"
     case mixer = "Audio Mixer"
     case stats = "System Stats"
@@ -15,6 +17,8 @@ public enum ApexTab: String, CaseIterable, Identifiable {
     public var icon: String {
         switch self {
         case .overview: return "sparkles"
+        case .tools: return "wrench.and.screwdriver.fill"
+        case .peripherals: return "computermouse.fill"
         case .snapping: return "rectangle.split.2x2"
         case .mixer: return "speaker.wave.3.fill"
         case .stats: return "gauge.with.needle.fill"

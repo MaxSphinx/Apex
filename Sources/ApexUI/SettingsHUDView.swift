@@ -60,6 +60,24 @@ public struct SettingsHUDView: View {
                             icon: "faceid",
                             desc: "Neural Engine camera verification"
                         )
+                        ModuleToggleRow(
+                            id: "peripheral_input",
+                            name: "Mouse & Keyboard Input",
+                            icon: "computermouse.fill",
+                            desc: "Independent scroll inversion & HyperKey"
+                        )
+                        ModuleToggleRow(
+                            id: "display_power",
+                            name: "Energy & Display",
+                            icon: "bolt.fill",
+                            desc: "Caffeine keep-awake and brightness control"
+                        )
+                        ModuleToggleRow(
+                            id: "quick_tools",
+                            name: "Quick Tools & OCR",
+                            icon: "wrench.and.screwdriver.fill",
+                            desc: "Vision OCR, color picker, port killer & keyboard lock"
+                        )
                     }
                 }
                 .padding(14)

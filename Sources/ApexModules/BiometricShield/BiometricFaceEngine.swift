@@ -170,6 +170,7 @@ public final class BiometricFaceEngine: NSObject, ObservableObject, AVCaptureVid
         let cb = scanCompletion
         scanCompletion = nil
         cb?(success, distance, intruderPhoto)
+        stopCapture()
     }
 
     public nonisolated func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {

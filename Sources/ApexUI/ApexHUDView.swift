@@ -92,6 +92,10 @@ public struct ApexHUDView: View {
                     OverviewView { tab in
                         selectedTab = tab
                     }
+                case .tools:
+                    QuickToolsHUDView()
+                case .peripherals:
+                    PeripheralInputHUDView()
                 case .snapping:
                     WindowGridHUDView()
                 case .mixer:

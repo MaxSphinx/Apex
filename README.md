@@ -103,8 +103,27 @@ Popular macOS multi-tool projects like `vorssaint-utils` started with a noble vi
 *Exclusive feature — unavailable in any other toolkit.*
 - Monitors active windows. If a designated private app (Telegram, Notes, Photos, WhatsApp, etc.) is brought to the foreground:
   - Runs instant on-device face verification using the built-in camera accelerated by the **Apple Neural Engine**.
-  - If an unknown face (or no face) is detected, locks the screen with a frosted privacy curtain and requires **Touch ID** authentication.
-  - **Telegram Intruder Alert**: Dispatches an instant security webhook to your Telegram bot with device hostname, app name, and timestamp.
+  - Camera operates strictly on-demand (zero battery drain and zero idle camera activation).
+  - If an unknown face is detected, locks the screen with a frosted privacy curtain and dispatches a **Telegram Intruder Alert** snapshot webhook.
+
+### 7. 🖱️ Independent Scroll Direction & SuperKey
+*Replaces Mos, LinearMouse, and Karabiner-Elements.*
+- **Scroll Inverter**: Reverse discrete mouse wheel scrolling independently without affecting Apple trackpad natural scrolling direction.
+- **SuperKey (Hyper Key)**: Transforms the unused CapsLock key into `⌃⌥⌘⇧` (Hyper modifier) for frictionless global navigation.
+- **Mouse Navigation**: Binds side buttons (buttons 4 & 5) to system Back (`⌘[`) and Forward (`⌘]`) in browsers and Finder.
+
+### 8. ☕️ Energy & Caffeine Keep-Awake
+*Replaces Amphetamine and Caffeine.*
+- Manages native IOKit power assertions (`PreventUserIdleDisplaySleep` and `PreventUserIdleSystemSleep`).
+- Presets: Indefinitely, 15 Minutes, 30 Minutes, 1 Hour, or 2 Hours with live countdown timer.
+
+### 9. 🧰 Quick Tools, Offline Vision OCR & Port Manager
+*Replaces TextSniper, ColorSlurp, and developer CLI utilities.*
+- **Screen OCR**: Interactive screen region snipping with Apple Vision neural text recognition (`VNRecognizeTextRequest`). Text is instantly extracted offline and copied to clipboard.
+- **Color Picker**: Native loupe screen sampler (`NSColorSampler`) copying HEX, RGB, or SwiftUI Color.
+- **Active Port Manager**: Live open TCP port scanner (`lsof -iTCP -sTCP:LISTEN`) showing PID, process name, and 1-click terminate.
+- **Keyboard Cleaning Mode**: Swallows keyboard input with a safe frosted overlay so you can clean your MacBook keyboard without misclicks. Unlock with 5x `ESC` or button.
+- **URL Tracker Cleaner**: Auto-strips tracking parameters (`utm_*`, `fbclid`, `gclid`, `si`, `igshid`) from copied URLs.
 
 ---
 

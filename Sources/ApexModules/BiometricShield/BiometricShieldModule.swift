@@ -30,7 +30,8 @@ public final class BiometricShieldModule: ApexModule {
     public func start() {
         guard isEnabled else { return }
         
-        BiometricFaceEngine.shared.startCapture()
+        // Camera capture is strictly on-demand to preserve privacy and zero CPU/battery load.
+        // It starts ONLY when a protected app is foregrounded and immediately stops after verification.
         
         workspaceObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didActivateApplicationNotification,

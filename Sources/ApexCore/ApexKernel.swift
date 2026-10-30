@@ -16,6 +16,9 @@ public final class ApexKernel: ObservableObject {
     public let clipboard = ClipboardModule()
     public let fileShelf = FileShelfModule()
     public let biometricShield = BiometricShieldModule()
+    public let peripheralInput = PeripheralInputModule()
+    public let displayPower = DisplayPowerModule()
+    public let quickTools = QuickToolsModule()
     
     private init() {
         registerModules()
@@ -29,6 +32,9 @@ public final class ApexKernel: ObservableObject {
         modules[clipboard.id] = clipboard
         modules[fileShelf.id] = fileShelf
         modules[biometricShield.id] = biometricShield
+        modules[peripheralInput.id] = peripheralInput
+        modules[displayPower.id] = displayPower
+        modules[quickTools.id] = quickTools
     }
     
     public func boot() {
